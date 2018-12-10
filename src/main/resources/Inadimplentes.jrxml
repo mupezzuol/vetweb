@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Inadimplentes" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="541cffc8-9670-4de9-a601-d88b8da9e689">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="Grafico" uuid="e1a0ed02-7810-4609-8e1a-c07ddf20e51a">
+		<queryString>
+			<![CDATA[select sum(v.preco) total, o.tipo from tbl_ocorrencia o
+join tbl_vacina_event ov on o.ocorrenciaid = ov.ocorrenciaid
+join tbl_vacina v on ov.vacinaid = v.vacinaid
+where ov.pago = false
+group by o.tipo]]>
+		</queryString>
+		<field name="total" class="java.math.BigDecimal"/>
+		<field name="tipo" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="debitos_por_tipo" uuid="c9647956-3b46-4388-a2d2-f4a23be6bac5">
+		<queryString>
+			<![CDATA[select count(*), op.tipo from tbl_ocorrencia op where op.pago = false group by op.tipo]]>
+		</queryString>
+		<field name="count" class="java.lang.Long"/>
+		<field name="tipo" class="java.lang.String"/>
+		<group name="tipo">
+			<groupExpression><![CDATA[$F{tipo}]]></groupExpression>
+		</group>
+	</subDataset>
+	<field name="nome" class="java.lang.String"/>
+	<field name="debitoTotal" class="java.lang.String"/>
+	<field name="valoresPorTipoOcorrencia" class="java.lang.String"/>
+	<title>
+		<band height="98">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="71" backcolor="#006699" uuid="6a64f651-e99b-405a-bf57-afa51b221af5"/>
+				<staticText>
+					<reportElement x="20" y="11" width="234" height="43" forecolor="#FFFFFF" uuid="027cd587-8c5c-48ba-b076-f60b8b587069"/>
+					<textElement>
+						<font size="34" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Inadimplentes]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="50">
+			<staticText>
+				<reportElement x="0" y="0" width="219" height="50" uuid="164fdc4c-f0d7-4d78-998a-91a520c1cd30"/>
+				<textElement>
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[NOME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="0" width="103" height="50" uuid="55ccb313-b346-4ec4-8e9b-7f3eba0c2663"/>
+				<textElement>
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[DEBITO TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="322" y="0" width="233" height="50" uuid="59d9ff0c-ac6e-4f39-9f76-1a8bbc0a1b1b"/>
+				<textElement>
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[VALORES POR TIPO OCORRENCIA]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="71">
+			<textField>
+				<reportElement x="0" y="0" width="219" height="71" uuid="ae5cd930-81bb-47cd-a81d-9b3d3a3bbcfa"/>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="219" y="0" width="103" height="71" uuid="0b31921c-7f0d-4f89-bbd1-0d72fd6e76bd"/>
+				<textFieldExpression><![CDATA[$F{debitoTotal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="322" y="0" width="233" height="71" uuid="3db45851-fc02-4dfd-a2fa-87b43dd5ea28"/>
+				<textFieldExpression><![CDATA[$F{valoresPorTipoOcorrencia}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="122">
+			<pieChart>
+				<chart>
+					<reportElement x="0" y="0" width="555" height="122" uuid="795e818f-fb19-4bef-ac9c-9849cbfddba0"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<keyExpression><![CDATA[$F{nome}]]></keyExpression>
+					<valueExpression><![CDATA[Double.valueOf($F{debitoTotal})]]></valueExpression>
+					<labelExpression><![CDATA[$F{nome}]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+		</band>
+	</summary>
+</jasperReport>
